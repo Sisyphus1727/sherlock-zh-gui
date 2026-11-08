@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sherlock 用户名查询 · 中文版</title>
+<style>
+  :root{
+    --bg:#f7f5f0; --card:#ffffff; --ink:#20242b; --muted:#6b7280;
+    --line:#e6e1d8; --accent:#b45309; --accent-soft:#fdf1e3;
+    --ok:#15803d; --ok-soft:#e8f5ec; --no:#6b7280; --no-soft:#f1f2f4;
+    --warn:#b45309; --warn-soft:#fdf3e6; --bad:#b91c1c; --bad-soft:#fdeceb;
+    --radius:14px; --shadow:0 1px 2px rgba(20,20,20,.04), 0 8px 24px rgba(20,20,20,.05);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font:15px/1.7 "Microsoft YaHei","PingFang SC","Hiragino Sans GB",system-ui,-apple-system,"Segoe UI",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1060px;margin:0 auto;padding:28px 20px 80px}
+  header.top{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(145deg,#1f2937,#111827);color:#fff;display:grid;place-items:center;font-size:21px}
+  h1{font-size:22px;margin:0;letter-spacing:.3px}
+  .sub{color:var(--muted);font-size:13px;margin-top:2px}
+  .badge{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:12.5px;color:var(--muted)}
+  .dot{width:7px;height:7px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 3px #dcfce7}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 22px;margin-bottom:16px}
+  .card h2{font-size:15.5px;margin:0 0 4px;display:flex;align-items:center;gap:9px}
+  .step{width:22px;height:22px;border-radius:7px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-size:12.5px;font-weight:700}
+  .hint{color:var(--muted);font-size:12.8px;margin:0 0 12px}
+  .hint b{color:var(--ink);font-weight:600}
+
+  input[type=text],input[type=number],textarea,select{
+    width:100%;border:1px solid var(--line);border-radius:10px;background:#fcfbf8;
+    padding:11px 13px;font:inherit;color:inherit;outline:none;transition:.15s;
+  }
+  input[type=text]:focus,input[type=number]:focus,textarea:focus{border-color:#d3b48d;background:#fff;box-shadow:0 0 0 3px #fbf3e7}
+  textarea{resize:vertical;min-height:52px;line-height:1.6}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .row > .grow{flex:1 1 260px}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .chip{background:#fbfaf7;border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:12.5px;color:#4b5563;cursor:pointer;transition:.15s}
+  .chip:hover{background:var(--accent-soft);border-color:#e8cfa8;color:var(--accent)}
+
+  .modes{display:flex;gap:8px;flex-wrap:wrap;margin:2px 0 4px}
+  .mode{border:1px solid var(--line);background:#fbfaf7;border-radius:11px;padding:9px 14px;cursor:pointer;font-size:13.5px;color:#4b5563;display:flex;flex-direction:column;gap:1px;transition:.15s}
+  .mode b{font-weight:600;color:var(--ink);font-size:13.5px}
+  .mode span{font-size:11.8px;color:var(--muted)}
+  .mode.on{border-color:#e3bf92;background:var(--accent-soft);box-shadow:0 0 0 3px #fdf6ec}
+
+  .sites-panel{display:none;margin-top:12px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .sites-panel.open{display:block}
+  .sites-tools{display:flex;gap:8px;padding:10px;background:#fbfaf7;border-bottom:1px solid var(--line);align-items:center;flex-wrap:wrap}
+  .sites-tools input{flex:1 1 200px;padding:8px 11px;font-size:13px}
+  .grid{max-height:280px;overflow:auto;padding:8px;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:2px 10px}
+  .site{display:flex;gap:8px;align-items:flex-start;padding:6px 8px;border-radius:8px;cursor:pointer;font-size:13px}
+  .site:hover{background:#faf8f3}
+  .site input{margin-top:4px;accent-color:var(--accent)}
+  .site .nm{font-weight:600;font-size:13px}
+  .site .en{color:var(--muted);font-size:11.5px}
+  .site .dm{color:#9ca3af;font-size:11.5px}
+  .nsfw{font-size:10.5px;color:#b91c1c;border:1px solid #f3c9c6;background:#fdf0ef;border-radius:5px;padding:0 4px;margin-left:4px}
+
+  details.adv{margin-top:2px}
+  details.adv summary{cursor:pointer;color:var(--accent);font-size:13.5px;user-select:none;list-style:none}
+  details.adv summary::-webkit-details-marker{display:none}
+  details.adv summary:before{content:"⚙ ";}
+  .adv-body{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-top:14px}
+  .field label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:5px}
+  .check{display:flex;gap:8px;align-items:center;font-size:13.5px;cursor:pointer;padding:4px 0}
+  .check input{accent-color:var(--accent)}
+
+  .runbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:6px}
+  button{font:inherit;cursor:pointer;border-radius:11px;border:1px solid transparent;padding:11px 20px;transition:.15s}
+  .primary{background:#1f2937;color:#fff;font-weight:600;box-shadow:0 2px 6px rgba(17,24,39,.18)}
+  .primary:hover{background:#111827}
+  .primary:disabled{background:#cbd5e1;box-shadow:none;cursor:not-allowed}
+  .ghost{background:#fff;border-color:var(--line);color:#374151}
+  .ghost:hover{border-color:#d6cbb8;background:#fbfaf7}
+  .ghost:disabled{opacity:.5;cursor:not-allowed}
+  .small{padding:7px 12px;font-size:12.8px;border-radius:9px}
+
+  .progress{height:7px;background:#efece5;border-radius:999px;overflow:hidden;margin:14px 0 10px;display:none}
+  .progress.show{display:block}
+  .progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,#d97706,#16a34a);transition:width .3s}
+  .status-line{font-size:13px;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+  .status-line .clock{font-variant-numeric:tabular-nums}
+
+  .stats{display:flex;gap:10px;flex-wrap:wrap;margin:4px 0 14px}
+  .stat{border:1px solid var(--line);border-radius:11px;padding:9px 14px;min-width:96px;background:#fdfdfb}
+  .stat .k{font-size:11.6px;color:var(--muted)}
+  .stat .v{font-size:19px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.25}
+  .stat.ok{background:var(--ok-soft);border-color:#cbe7d5}
+  .stat.ok .v{color:var(--ok)}
+  .stat.no{background:var(--no-soft)}
+  .stat.bad{background:var(--bad-soft);border-color:#f0cfcc}
+  .stat.bad .v{color:var(--bad)}
+
+  .tabs{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+  .tab{border:1px solid transparent;background:transparent;border-radius:9px;padding:6px 12px;font-size:13px;color:var(--muted)}
+  .tab.on{background:#f1eee7;color:var(--ink);font-weight:600}
+
+  table{width:100%;border-collapse:collapse;font-size:13.4px}
+  th{text-align:left;color:var(--muted);font-weight:600;font-size:12.2px;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+  td{padding:9px 10px;border-bottom:1px solid #f2efe9;vertical-align:top}
+  tbody tr:hover{background:#fbfaf7}
+  .sname{font-weight:600}
+  .sname .en{display:block;color:var(--muted);font-size:11.6px;font-weight:400}
+  .pill{display:inline-block;border-radius:999px;padding:2px 10px;font-size:12px;white-space:nowrap}
+  .pill.ok{background:var(--ok-soft);color:var(--ok)}
+  .pill.no{background:var(--no-soft);color:#4b5563}
+  .pill.warn{background:var(--warn-soft);color:var(--warn)}
+  .pill.bad{background:var(--bad-soft);color:var(--bad)}
+  .pill.waf{background:#fff7ed;color:#c2410c}
+  a.link{color:#1d4ed8;text-decoration:none;word-break:break-all}
+  a.link:hover{text-decoration:underline}
+  .ms{color:#9ca3af;font-size:11.8px;white-space:nowrap}
+  .empty{padding:34px 10px;text-align:center;color:var(--muted);font-size:13.5px}
+  .files{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .file{border:1px solid var(--line);background:#fbfaf7;border-radius:9px;padding:7px 11px;font-size:12.6px;color:#374151}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#1f2937;color:#fff;padding:10px 18px;border-radius:10px;font-size:13px;opacity:0;transition:.25s;pointer-events:none;z-index:99}
+  .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+  .help p{margin:6px 0}
+  .help ul{margin:6px 0 10px;padding-left:20px}
+  .help li{margin:3px 0}
+  .kbd{background:#f1eee7;border:1px solid #e2ddd2;border-radius:5px;padding:0 5px;font-family:Consolas,monospace;font-size:12px}
+  footer{color:#9ca3af;font-size:12px;text-align:center;margin-top:26px}
+  @media (max-width:640px){ .wrap{padding:18px 12px 60px} .card{padding:16px} h1{font-size:19px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="logo">🔎</div>
+      <div>
+        <h1>Sherlock 用户名查询</h1>
+        <div class="sub">在一个或多个网站上，查询某个用户名是否已被注册 · 全中文操作界面</div>
+      </div>
+    </div>
+    <div class="badge"><span class="dot"></span><span id="siteTotal">正在载入站点…</span></div>
+  </header>
+
+  <!-- 第一步 -->
+  <section class="card">
+    <h2><span class="step">1</span>填写用户名</h2>
+    <p class="hint">要查的用户名，可以有多个，用空格、逗号或换行分开。想查 <b>变体</b>（下划线/短横线/点）就用 <b>{?}</b>，例如 <span class="kbd">john{?}doe</span> 会查 john_doe、john-doe、john.doe。</p>
+    <textarea id="usernames" placeholder="例如：torvalds     或     torvalds, linus_torvalds"></textarea>
+    <div class="chips">
+      <span class="chip" data-u="torvalds">试试 torvalds（Linux 之父）</span>
+      <span class="chip" data-u="elonmusk">试试 elonmusk</span>
+      <span class="chip" data-u="torvalds{?}">变体：torvalds{?}</span>
+    </div>
+  </section>
+
+  <!-- 第二步 -->
+  <section class="card">
+    <h2><span class="step">2</span>选择要查询的网站</h2>
+    <p class="hint">站点越多越慢。一般先查<b>常用站点</b>，需要时再查全部。</p>
+    <div class="modes" id="modes">
+      <button class="mode on" data-mode="popular"><b>常用站点</b><span>精选 12 个主流平台，约 10 秒</span></button>
+      <button class="mode" data-mode="all"><b>全部站点</b><span id="allLabel">481 个，约 1~2 分钟</span></button>
+      <button class="mode" data-mode="custom"><b>自定义</b><span>自己勾选要查的网站</span></button>
+    </div>
+
+    <div class="sites-panel" id="sitesPanel">
+      <div class="sites-tools">
+        <input type="text" id="siteSearch" placeholder="搜索网站（支持中文、英文、域名）" />
+        <button class="ghost small" id="checkVisible">全选当前结果</button>
+        <button class="ghost small" id="clearAll">清空</button>
+        <span class="hint" style="margin:0" id="pickedCount">已选 0 个</span>
+      </div>
+      <div class="grid" id="siteGrid"></div>
+    </div>
+  </section>
+
+  <!-- 第三步 -->
+  <section class="card">
+    <h2><span class="step">3</span>设置与开始</h2>
+    <details class="adv">
+      <summary>高级选项（一般不用改）</summary>
+      <div class="adv-body">
+        <div class="field">
+          <label>每个网站最多等几秒（超时）</label>
+          <input type="number" id="timeout" value="20" min="5" max="120" step="5" />
+        </div>
+        <div class="field">
+          <label>结果保存到哪个文件夹</label>
+          <input type="text" id="outdir" value="" />
+        </div>
+        <div class="field">
+          <label>代理（可选，查被墙网站时填）</label>
+          <input type="text" id="proxy" placeholder="例如 socks5://127.0.0.1:1080" />
+        </div>
+        <div class="field">
+          <label>额外选项</label>
+          <label class="check"><input type="checkbox" id="nsfw" /> 包含成人（NSFW）网站</label>
+          <label class="check"><input type="checkbox" id="expTxt" checked /> 同时保存 TXT 文本</label>
+          <label class="check"><input type="checkbox" id="expCsv" checked /> 同时保存 CSV 表格</label>
+          <label class="check"><input type="checkbox" id="expXlsx" /> 同时保存 Excel（.xlsx）</label>
+        </div>
+      </div>
+    </details>
+
+    <div class="runbar" style="margin-top:16px">
+      <button class="primary" id="runBtn">开始查询</button>
+      <button class="ghost" id="stopBtn" disabled>停止</button>
+      <span class="hint" style="margin:0" id="runHint">准备好后点「开始查询」</span>
+      <span class="ms" id="clock"></span>
+    </div>
+    <div class="progress" id="bar"><i></i></div>
+    <div class="status-line" id="statusLine"></div>
+  </section>
+
+  <!-- 第四步 -->
+  <section class="card" id="resultCard">
+    <h2><span class="step">4</span>查询结果</h2>
+    <div class="stats" id="stats"></div>
+    <div class="tabs" id="tabs">
+      <button class="tab on" data-f="all">全部</button>
+      <button class="tab" data-f="claimed">已注册</button>
+      <button class="tab" data-f="available">未注册</button>
+      <button class="tab" data-f="fail">查询失败</button>
+    </div>
+    <div style="overflow:auto">
+      <table>
+        <thead><tr><th style="width:38%">网站</th><th style="width:20%">状态</th><th>个人主页链接</th><th style="width:70px">耗时</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <div class="empty" id="empty">还没有结果。填好用户名、选好网站，点上面的「开始查询」。</div>
+    <div class="files" id="files"></div>
+  </section>
+
+  <!-- 帮助 -->
+  <section class="card help">
+    <h2><span class="step">?</span>怎么看结果</h2>
+    <ul>
+      <li><span class="pill ok">已注册</span> 这个网站确实存在该用户名，后面的链接就是它的个人主页，点开就能看。</li>
+      <li><span class="pill no">未注册</span> 该网站上没有这个用户名（可能是没人注册，也可能被网站屏蔽了检测）。</li>
+      <li><span class="pill warn">不支持此用户名</span> 网站对用户名格式有要求（比如不能有点号），这个用户名在它那里不合法。</li>
+      <li><span class="pill waf">被网站拦截</span> 对方有反爬（如 Cloudflare），本次没查到。换代理或稍后再试。</li>
+      <li><span class="pill bad">查询失败</span> 网络超时或对方返回异常。多半和网络有关，不代表账号不存在。</li>
+    </ul>
+    <p><b>小技巧：</b></p>
+    <ul>
+      <li>名字太常见时「已注册」会很多，其中有一部分是网站对任意名字都返回 200 造成的误报，点开链接人工核对一下最稳。</li>
+      <li>查不到某站时先确认网络：勾选代理再查一次，或者先把超时调到 30 秒。</li>
+      <li>查询时会自动把结果存成文件（默认在<b>桌面的「Sherlock报告」文件夹</b>），查完可以点「打开报告文件夹」。</li>
+    </ul>
+  </section>
+
+  <footer>Sherlock v0.16.2 本地版 · 仅在本机运行，查询记录不会上传到任何地方</footer>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const state = {
+  catalog: null,
+  mode: "popular",
+  picked: new Set(),
+  results: [],
+  filter: "all",
+  running: false,
+  total: 0,
+  startedAt: 0,
+  timer: null,
+  es: null,
+};
+
+const STATUS = {
+  claimed:   { label: "已注册", cls: "ok" },
+  available: { label: "未注册", cls: "no" },
+  illegal:   { label: "不支持此用户名", cls: "warn" },
+  waf:       { label: "被网站拦截", cls: "waf" },
+  unknown:   { label: "查询失败", cls: "bad" },
+};
+
+function toast(msg){
+  const t = $("#toast");
+  t.textContent = msg;
+  t.classList.add("on");
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => t.classList.remove("on"), 2200);
+}
+
+async function loadCatalog(){
+  const res = await fetch("/api/sites");
+  const data = await res.json();
+  state.catalog = data;
+  $("#siteTotal").textContent = data.sites.length + " 个网站可用";
+  $("#allLabel").textContent = data.sites.length + " 个，约 1~2 分钟";
+  state.picked = new Set(data.defaults);
+  $("#outdir").value = "";
+  $("#outdir").placeholder = data.default_out || "";
+  renderSites();
+}
+
+function siteLabel(s){
+  return s.cn ? s.cn : s.name;
+}
+
+function renderSites(){
+  const grid = $("#siteGrid");
+  const kw = ($("#siteSearch").value || "").trim().toLowerCase();
+  const list = state.catalog.sites.filter(s => {
+    if (!kw) return true;
+    return (s.name + " " + s.cn + " " + s.desc + " " + s.domain).toLowerCase().includes(kw);
+  });
+  grid.innerHTML = "";
+  for (const s of list){
+    const label = document.createElement("label");
+    label.className = "site";
+    label.innerHTML = `
+      <input type="checkbox" ${state.picked.has(s.name) ? "checked" : ""} data-name="${escAttr(s.name)}">
+      <div>
+        <div class="nm">${esc(siteLabel(s))}${s.nsfw ? '<span class="nsfw">成人</span>' : ""}</div>
+        ${s.cn && s.cn !== s.name ? `<div class="en">${esc(s.name)}${s.desc ? " · " + esc(s.desc) : ""}</div>`
+                                   : `<div class="en">${esc(s.desc || s.domain)}</div>`}
+      </div>`;
+    label.querySelector("input").addEventListener("change", (e) => {
+      if (e.target.checked) state.picked.add(s.name); else state.picked.delete(s.name);
+      updatePicked();
+    });
+    grid.appendChild(label);
+  }
+  if (!list.length) grid.innerHTML = '<div class="empty">没有匹配的网站</div>';
+  updatePicked();
+}
+
+function updatePicked(){
+  $("#pickedCount").textContent = "已选 " + state.picked.size + " 个";
+}
+
+function esc(s){ return String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function escAttr(s){ return esc(s); }
+
+function setMode(mode){
+  state.mode = mode;
+  document.querySelectorAll(".mode").forEach(b => b.classList.toggle("on", b.dataset.mode === mode));
+  $("#sitesPanel").classList.toggle("open", mode === "custom");
+  if (mode === "popular") state.picked = new Set(state.catalog.defaults);
+  if (mode === "all") state.picked = new Set(state.catalog.sites.map(s => s.name));
+  renderSites();
+  updateSummary();
+}
+
+function payload(){
+  const names = $("#usernames").value.split(/[\s,，、;；]+/).map(s => s.trim()).filter(Boolean);
+  return {
+    usernames: names,
+    sites: [...state.picked],
+    timeout: Number($("#timeout").value) || 20,
+    outdir: $("#outdir").value.trim() || null,
+    proxy: $("#proxy").value.trim() || null,
+    nsfw: $("#nsfw").checked,
+    txt: $("#expTxt").checked,
+    csv: $("#expCsv").checked,
+    xlsx: $("#expXlsx").checked,
+  };
+}
+
+function updateSummary(){
+  const p = payload();
+  state.total = p.sites.length || (state.catalog ? state.catalog.sites.length : 0);
+  $("#runHint").textContent = p.usernames.length
+    ? `将查询 ${p.usernames.length} 个用户名 × ${state.total} 个网站`
+    : "请先填写用户名";
+}
+
+async function start(){
+  const p = payload();
+  if (!p.usernames.length){ toast("请先填写用户名"); $("#usernames").focus(); return; }
+  if (state.mode === "custom" && !p.sites.length){ toast("请至少勾选一个网站"); return; }
+  resetResults();
+  state.running = true;
+  state.startedAt = Date.now();
+  $("#runBtn").disabled = true;
+  $("#stopBtn").disabled = false;
+  $("#bar").classList.add("show");
+  $("#bar").querySelector("i").style.width = "3%";
+  $("#runHint").textContent = "正在查询…";
+  startClock();
+
+  let resp;
+  try {
+    resp = await fetch("/api/run", {
+      method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify(p)
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || "启动失败");
+    state.total = p.sites.length || state.catalog.sites.length;
+    state.jobId = data.id;
+    $("#statusLine").innerHTML = `<span>输出目录：<b>${esc(data.outdir)}</b></span>`;
+    listen(data.id);
+  } catch (err){
+    toast(err.message);
+    stopLocal();
+  }
+}
+
+function listen(id){
+  const es = new EventSource(`/api/events?id=${id}`);
+  state.es = es;
+  let errs = 0;
+  es.onmessage = (ev) => {
+    errs = 0;
+    const e = JSON.parse(ev.data);
+    if (e.type === "result") addResult(e);
+    else if (e.type === "user") setStatus(`正在查询「${e.user}」…`);
+    else if (e.type === "done") finish(e);
+    else if (e.type === "error") toast(e.message);
+  };
+  es.onerror = () => {
+    if (!state.running) return;
+    errs += 1;
+    if (errs >= 3){
+      stopLocal();
+      toast("与服务连接中断，请检查黑窗口是否被关闭");
+      setStatus("连接中断");
+    }
+  };
+}
+
+function addResult(e){
+  state.results.push(e);
+  renderStats();
+  if (matchFilter(e)) appendRow(e);
+  else $("#empty").style.display = state.results.length ? "none" : "";
+  const done = state.results.length;
+  const total = Math.max(state.total * (payload().usernames.length || 1), done, 1);
+  $("#bar").querySelector("i").style.width = Math.min(100, Math.round(done / total * 100)) + "%";
+  setStatus(`已完成 ${done} / ${total} 个站点`);
+}
+
+function matchFilter(e){
+  if (state.filter === "all") return true;
+  if (state.filter === "fail") return !["claimed", "available"].includes(e.status);
+  return e.status === state.filter;
+}
+
+function appendRow(e){
+  const rows = $("#rows");
+  const st = STATUS[e.status] || STATUS.unknown;
+  const tr = document.createElement("tr");
+  tr.dataset.status = e.status;
+  const cn = state.catalog && state.catalog.sites.find(s => s.name === e.site);
+  tr.innerHTML = `
+    <td><div class="sname">${esc(cn && cn.cn ? cn.cn : e.site)}${cn && cn.cn && cn.cn !== e.site ? `<span class="en">${esc(e.site)}</span>` : ""}</div></td>
+    <td><span class="pill ${st.cls}" title="${esc(e.detail || "")}">${st.label}</span></td>
+    <td>${e.url ? `<a class="link" href="${escAttr(e.url)}" target="_blank" rel="noopener">${esc(e.url)}</a>` : '<span style="color:#9ca3af">—</span>'}</td>
+    <td class="ms">${e.ms ? e.ms + " ms" : ""}</td>`;
+  rows.appendChild(tr);
+  $("#empty").style.display = "none";
+}
+
+function renderStats(){
+  const c = state.results.filter(r => r.status === "claimed").length;
+  const n = state.results.filter(r => r.status === "available").length;
+  const f = state.results.length - c - n;
+  $("#stats").innerHTML = `
+    <div class="stat ok"><div class="k">已注册</div><div class="v">${c}</div></div>
+    <div class="stat no"><div class="k">未注册</div><div class="v">${n}</div></div>
+    <div class="stat bad"><div class="k">查询失败</div><div class="v">${f}</div></div>
+    <div class="stat"><div class="k">已检查</div><div class="v">${state.results.length}</div></div>`;
+}
+
+function rerender(){
+  $("#rows").innerHTML = "";
+  const list = state.results.filter(matchFilter);
+  list.forEach(appendRow);
+  $("#empty").style.display = list.length ? "none" : "";
+  if (!list.length && state.results.length) $("#empty").textContent = "当前筛选条件下没有结果";
+  else if (!state.results.length) $("#empty").textContent = "还没有结果。填好用户名、选好网站，点上面的「开始查询」。";
+}
+
+function finish(e){
+  stopLocal();
+  const secs = e.elapsed || ((Date.now() - state.startedAt) / 1000).toFixed(1);
+  setStatus(`查询结束，用时 ${secs} 秒 · 输出目录：${e.outdir || ""}`);
+  $("#runHint").textContent = "查询完成";
+  $("#bar").querySelector("i").style.width = "100%";
+  if (e.files && e.files.length){
+    $("#files").innerHTML = e.files.map(f => `<span class="file">📄 ${esc(f.name)} · ${(f.size/1024).toFixed(1)} KB</span>`).join("")
+      + `<button class="ghost small" onclick="openFolder('${escAttr((e.outdir||"").replace(/\\/g,'\\\\'))}')">打开报告文件夹</button>`;
+  }
+}
+
+function stopLocal(){
+  state.running = false;
+  $("#runBtn").disabled = false;
+  $("#stopBtn").disabled = true;
+  if (state.timer) clearInterval(state.timer);
+  if (state.es){ state.es.close(); state.es = null; }
+  $("#clock").textContent = "";
+}
+
+function resetResults(){
+  state.results = [];
+  $("#rows").innerHTML = "";
+  $("#files").innerHTML = "";
+  $("#stats").innerHTML = "";
+  $("#empty").style.display = "";
+  $("#empty").textContent = "正在开始…";
+  $("#bar").querySelector("i").style.width = "0";
+}
+
+function setStatus(html){ $("#statusLine").innerHTML = html; }
+
+function startClock(){
+  clearInterval(state.timer);
+  state.timer = setInterval(() => {
+    const s = ((Date.now() - state.startedAt) / 1000).toFixed(0);
+    const el = $("#clock");
+    if (el) el.textContent = s + " 秒";
+  }, 1000);
+}
+
+async function openFolder(dir){
+  const res = await fetch("/api/open", {
+    method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({path: dir || null})
+  });
+  const data = await res.json();
+  if (!data.ok) toast("打不开文件夹：" + (data.error || ""));
+}
+
+async function stop(){
+  if (state.jobId){
+    await fetch("/api/stop", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({id: state.jobId})});
+  }
+  stopLocal();
+  setStatus("已停止");
+  $("#runHint").textContent = "已停止";
+}
+
+// ---- 事件绑定 ----
+document.querySelectorAll(".mode").forEach(b => b.addEventListener("click", () => setMode(b.dataset.mode)));
+document.querySelectorAll(".chip[data-u]").forEach(c => c.addEventListener("click", () => {
+  const ta = $("#usernames");
+  ta.value = ta.value ? ta.value + " " + c.dataset.u : c.dataset.u;
+  updateSummary();
+}));
+document.querySelectorAll(".tab").forEach(t => t.addEventListener("click", () => {
+  state.filter = t.dataset.f;
+  document.querySelectorAll(".tab").forEach(x => x.classList.toggle("on", x === t));
+  rerender();
+}));
+$("#siteSearch").addEventListener("input", renderSites);
+$("#checkVisible").addEventListener("click", () => {
+  document.querySelectorAll("#siteGrid input[type=checkbox]").forEach(cb => {
+    cb.checked = true; state.picked.add(cb.dataset.name);
+  });
+  updatePicked();
+});
+$("#clearAll").addEventListener("click", () => {
+  state.picked.clear();
+  document.querySelectorAll("#siteGrid input[type=checkbox]").forEach(cb => cb.checked = false);
+  updatePicked();
+});
+$("#runBtn").addEventListener("click", start);
+$("#stopBtn").addEventListener("click", stop);
+["usernames","timeout","outdir","proxy","nsfw"].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener("input", updateSummary);
+  el.addEventListener("change", updateSummary);
+});
+
+loadCatalog().then(() => { updateSummary(); setStatus("填好用户名后点「开始查询」"); });
+</script>
+</body>
+</html>

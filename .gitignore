@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# 运行时产物
+gui/.profile/
+gui/启动日志.txt
+*.log
+
+# 导出报告
+*.txt
+*.csv
+*.xlsx
+!requirements.txt
+
+# 系统垃圾
+.DS_Store
+Thumbs.db
+desktop.ini
