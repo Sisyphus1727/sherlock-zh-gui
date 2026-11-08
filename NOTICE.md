@@ -2,6 +2,9 @@
 
 本项目（`sherlock-zh-gui`）是第三方附加组件，为下列上游项目提供一个中文网页界面。
 
+- 本项目的许可证文本见 [LICENSE](LICENSE)（MIT，Copyright © 2026 sherlock-zh-gui contributors）。
+- 上游的版权声明与许可证原文见本文末节；两者同为 MIT，互不冲突。
+
 ## 上游项目
 
 | 项 | 内容 |
