@@ -1,4 +1,4 @@
-# 把中文界面装入已克隆的 sherlock 仓库
+﻿# 把中文界面装入已克隆的 sherlock 仓库
 #
 # 示例：
 #   powershell -ExecutionPolicy Bypass -File .\install.ps1 -Target D:\tools\sherlock
